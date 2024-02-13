@@ -47,6 +47,8 @@ class VideoViewController: ItemBaseController<VideoView> {
 
         super.init(index: index, itemCount: itemCount, fetchImageBlock: fetchImageBlock, configuration: configuration, isInitialController: isInitialController)
     }
+    
+    private var isContinueAfterAppear = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,7 +108,8 @@ class VideoViewController: ItemBaseController<VideoView> {
     @objc func playVideoInitially() {
 
         self.player.play()
-
+        
+        self.isContinueAfterAppear = true
 
         UIView.animate(withDuration: 0.25, animations: { [weak self] in
 
@@ -195,19 +198,23 @@ class VideoViewController: ItemBaseController<VideoView> {
                     if self.player.isPlaying()  {
 
                         self.player.pause()
+                        self.isContinueAfterAppear = false
                     }
                     else {
 
                         self.player.play()
+                        self.isContinueAfterAppear = true
                     }
 
                 case .remoteControlPause:
 
                     self.player.pause()
+                    self.isContinueAfterAppear = false
 
                 case .remoteControlPlay:
 
                     self.player.play()
+                    self.isContinueAfterAppear = true
 
                 case .remoteControlPreviousTrack:
 
@@ -224,11 +231,16 @@ class VideoViewController: ItemBaseController<VideoView> {
     }
     
     private func performAutoPlay() {
-        guard autoPlayEnabled else { return }
-        guard autoPlayStarted == false else { return }
-        
-        autoPlayStarted = true
-        embeddedPlayButton.isHidden = true
-        scrubber.play()
+        if isContinueAfterAppear {
+            scrubber.play()
+        } else {
+            guard autoPlayEnabled else { return }
+            guard autoPlayStarted == false else { return }
+            
+            autoPlayStarted = true
+            embeddedPlayButton.isHidden = true
+            scrubber.play()
+            isContinueAfterAppear = true
+        }
     }
 }
