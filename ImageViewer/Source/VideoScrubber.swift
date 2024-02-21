@@ -104,6 +104,7 @@ open class VideoScrubber: UIControl {
         self.playButton.isHidden = true
         self.pauseButton.isHidden = true
         self.replayButton.isHidden = false
+        replay()
     }
 
     func setup() {
